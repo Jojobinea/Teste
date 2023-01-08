@@ -33,13 +33,13 @@ def draw_objects(obj, w, h, x, y, data):
     obj.rect = pygame.Rect(x, y, 0, 0)
 
 
-def hud_draw(x, y, score, size, bst):
+def hud_draw(tx, ty, score, size, bst):
     font = pygame.font.Font('PressStart2P.ttf', size)
     if bst:
         score = str(score).zfill(3)
     text = font.render(f"{score}", True, (255, 255, 255), (0, 0, 0))
     text_rect = text.get_rect()
-    text_rect.center = (x, y)
+    text_rect.center = (tx, ty)
     screen.blit(text, text_rect)
 
 
@@ -57,7 +57,7 @@ def draw_border_details():
 
 
 def check_paddle_collision():
-    if ball.rect.y > paddle.rect.y:
+    if ball.rect.y >= paddle.rect.y + 12 and paddle.rect.x + 45 >= ball.rect.x >= paddle.rect.x:
         ball.rect.y = paddle.rect.y + 12
 
 
@@ -185,8 +185,12 @@ while game_loop:
         for brick in bricks_count:
             if brick.rect.y > ball.rect.y > brick.rect.y - 10 \
                     and brick.rect.x + 40 > ball.rect.x > brick.rect.x - 35:
-                ball_dx = 2
-                ball_dy = -2
+                if ball_dy > 0:
+                    ball_dx = 2
+                    ball_dy = -2
+                else:
+                    ball_dx = -2
+                    ball_dy = -2
 
                 bounce_sound.play()
 
