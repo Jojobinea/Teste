@@ -32,12 +32,15 @@ def draw_objects(obj, w, h, x, y, data):
     obj.rect = pygame.Rect(x, y, 0, 0)
 
 
-def hud_draw(x, y, score):
-    font = pygame.font.Font('PressStart2P.ttf', 32)
+def hud_draw(x, y, score, bst):
+    font = pygame.font.Font('PressStart2P.ttf', 50)
+    if bst:
+        score = str(score).zfill(3)
     text = font.render(f"{score}", True, (255, 255, 255), (0, 0, 0))
     text_rect = text.get_rect()
     text_rect.center = (x, y)
     screen.blit(text, text_rect)
+
 
 def draw_border_details():
     pygame.draw.line(screen, blue, (24, 713), (24, 731), 12)
@@ -105,16 +108,10 @@ while game_loop:
     # Paddle moves
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_RIGHT]:
-        if paddle.rect.x == 514:
-            paddle.rect.x = 514
-        else:
-            paddle.rect.x += 4
-    if keys[pygame.K_LEFT]:
-        if paddle.rect.x == 26:
-            paddle.rect.x = 26
-        else:
-            paddle.rect.x -= 4
+    if keys[pygame.K_LEFT] and paddle.rect.x > 24:
+        paddle.rect.x -= 5
+    elif keys[pygame.K_RIGHT] and paddle.rect.x < 532:
+        paddle.rect.x += 5
 
     # Ball movement
     ball.rect.x += ball_dx
@@ -136,7 +133,7 @@ while game_loop:
         bounce_sound_effect.play()
 
     # Collision with the paddle
-    if ball.rect.y == paddle.rect.y and paddle.rect.x + 50 > ball.rect.x > paddle.rect.x - 30:
+    if ball.rect.y == (paddle.rect.y + 12) and paddle.rect.x + 50 > ball.rect.x > paddle.rect.x - 30:
         ball_dy *= -1
         bounce_sound_effect.play()
 
@@ -149,7 +146,7 @@ while game_loop:
         birth_score += 1
 
     # Collision with the brick
-    if birth_score <= 100:
+    if birth_score <= 4:
         for brick in bricks_count:
             if brick.rect.y > ball.rect.y > brick.rect.y - 20 \
                     and brick.rect.x + 20 > ball.rect.x > brick.rect.x - 20:
@@ -159,7 +156,7 @@ while game_loop:
                 bricks_count.remove(brick)
                 bounce_sound_effect.play()
 
-    if birth_score > 100:
+    if birth_score > 4:
         paddle.rect.x = -35
         paddle.image = pygame.transform.scale(paddle.image, [655, 60])
 
@@ -177,16 +174,16 @@ while game_loop:
     draw_border_details()
 
     if len(bricks_count) == 112:
-        hud_draw(80, 60, '1')
-        hud_draw(110, 100, '000')
-        hud_draw(440, 60, birth_score)
-        hud_draw(470, 100, '000')
+        hud_draw(80, 60, '1', 0)
+        hud_draw(130, 140, '000', 0)
+        hud_draw(440, 60, birth_score, 0)
+        hud_draw(470, 140, '000', 0)
 
     else:
-        hud_draw(80, 60, '1')
-        hud_draw(110, 100, brick_score)
-        hud_draw(440, 60, birth_score)
-        hud_draw(470, 100, '000')
+        hud_draw(80, 60, '1', 0)
+        hud_draw(130, 140, brick_score, 1)
+        hud_draw(440, 60, birth_score, 0)
+        hud_draw(470, 140, '000', 0)
 
     # Game ending
     if len(bricks_count) == 0:
