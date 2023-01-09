@@ -27,10 +27,10 @@ paddle = pygame.sprite.Sprite(drawGroup)
 ball = pygame.sprite.Sprite(drawGroup)
 
 
-def draw_objects(obj, w, h, x, y, data):
+def draw_objects(obj, w, h, xx, yy, data):
     obj.image = pygame.image.load(data)
     obj.image = pygame.transform.scale(obj.image, [w, h])
-    obj.rect = pygame.Rect(x, y, 0, 0)
+    obj.rect = pygame.Rect(xx, yy, 0, 0)
 
 
 def hud_draw(tx, ty, score, size, bst):
@@ -57,8 +57,8 @@ def draw_border_details():
 
 
 def check_paddle_collision():
-    if ball.rect.y >= paddle.rect.y + 12 and paddle.rect.x + 45 >= ball.rect.x >= paddle.rect.x:
-        ball.rect.y = paddle.rect.y + 12
+    if paddle.rect.y + 15 >= ball.rect.y >= paddle.rect.y + 12 and paddle.rect.x + 45 >= ball.rect.x >= paddle.rect.x:
+        ball.rect.y = paddle.rect.y + 10
 
 
 draw_objects(edge, 600, 900, 7, 0, "Edge.png")
@@ -100,6 +100,8 @@ ball_dy = 2
 game_loop = True
 
 while game_loop:
+
+    check_paddle_collision()
 
     for event in pygame.event.get():
 
@@ -186,11 +188,13 @@ while game_loop:
             if brick.rect.y > ball.rect.y > brick.rect.y - 10 \
                     and brick.rect.x + 40 > ball.rect.x > brick.rect.x - 35:
                 if ball_dy > 0:
-                    ball_dx = 2
                     ball_dy = -2
                 else:
+                    ball_dy = 2
+                if ball_dx > 0:
+                    ball_dx = 2
+                else:
                     ball_dx = -2
-                    ball_dy = -2
 
                 bounce_sound.play()
 
@@ -243,4 +247,5 @@ while game_loop:
         hud_draw(300, 400, 'GAME IS OVER! YOU WON!', 24, 0)
 
     # Display update
+    check_paddle_collision()
     pygame.display.flip()
